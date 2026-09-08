@@ -28,9 +28,9 @@ Implementation fidelity vs stored original-model outputs:
 - max |Δ score| = 9.253e-02, mean |Δ| = 1.519e-02, Pearson r = 0.999947
 - decision agreement 99.6 (98.8–99.9), kappa 0.9918
 
-- vs original 2017 code executed in this environment: max |Δ| = 0.000e+00, agreement 100.0 (99.5–100.0)
+- vs original 2017 code executed in this environment (same SVM-only configuration as the refactored tool): max |Δ| = 0.000e+00, agreement 100.0 (99.5–100.0)
 
-The max |Δ| of 9.3e-02 against the *stored* outputs reflects scikit-learn float-precision drift between the 2016 environment that generated them and this one; against the original code executed here the scores are bit-identical (max |Δ| = 0.0), and decisions agree 99.6% with the stored outputs.
+The max |Δ| of 9.3e-02 against the *stored* outputs reflects scikit-learn float-precision drift between the 2016 environment that generated them and this one; against the original code executed here in the same SVM-only configuration the scores are bit-identical (max |Δ| = 0.0), and decisions agree 99.6% with the stored outputs. Scope: the executed comparison validates the SVM path shared by both tools — the original's TensorFlow/Keras CNN is bypassed by the shim and never executes, so the full SVM+CNN ensemble appears only as stored outputs (Tier B).
 
 **Advanced statistics:**
 - ROC AUC: 0.9658 (rank-based; unaffected by the SVM score's arbitrary scale)
@@ -59,6 +59,8 @@ The max |Δ| of 9.3e-02 against the *stored* outputs reflects scikit-learn float
 - judgement agreement: 100.0 (99.9–100.0), kappa 1.0000
 - max |Δ sentence score|: 0.000e+00
 - vectorizer matrices identical: True (14 probes)
+
+**Scope (SVM-to-SVM comparison):** both pipelines run SVM-only. The RoB path exercised here in the original is its SVM pipeline (interaction-hashed vectorizer + linear SVMs over the shared weight files); the original's TensorFlow/Keras components are bypassed by the validation shim and never execute. The agreement above therefore says: the refactored SVM RoB pipeline exactly reproduces the original's SVM judgements on identical inputs — an apples-to-apples design that isolates the refactoring as the only variable. It is NOT a reproduction of the original's full SVM+CNN ensemble; the performance contribution of the dropped components is quantified separately in Tier B from stored ensemble outputs.
 
 ## Tier D — parser robustness on the open-access corpus (descriptive, not accuracy)
 
@@ -91,6 +93,16 @@ The max |Δ| of 9.3e-02 against the *stored* outputs reflects scikit-learn float
   RoB accuracy therefore transfers to the refactored tool by
   weight-identity, verified here by exact pipeline reproduction
   (Tier C). No new RoB ground truth was collected.
+- Scope of all live comparisons: the original 2017 code cannot
+  execute its TensorFlow 1.x CNN in a maintained environment;
+  the validation shim bypasses it deliberately. Every executed
+  original-vs-refactored comparison (Tier A executed-code
+  fidelity, Tier C, and the Tier E control) therefore runs the
+  original in SVM-only capacity, matching the refactored tool's
+  SVM-only configuration. Claims of exact reproduction are
+  claims about these SVM paths; the ensemble-level cost of
+  dropping the CNN + publication-type components is measured
+  only in Tier B, against the original's stored outputs.
 - Tier D is a robustness/extraction-integrity check on modern
   open-access PDFs, explicitly not an accuracy validation.
 - Data and code availability: the full validation harness

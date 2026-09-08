@@ -17,6 +17,9 @@ What this script does (each phase cached and resumable):
   analyze   parse each PDF with the refactored pipeline and judge 4 domains
   compare   agreement vs the human consensus and vs Tian's automatic labels;
             writes validation_results_tian/tian_report.md + figures
+  control   the original 2017 BiasRobot (via the shim, SVM-only like
+            RCT-Reviewer) re-judged on the identical PMC text; appends to
+            the report — isolates PDF source as the only variable
 
 Run:  RCT-Reviewer/.venv/bin/python evaluate_tian.py            # all phases
       RCT-Reviewer/.venv/bin/python evaluate_tian.py --phase compare
@@ -588,7 +591,9 @@ def phase_compare():
               f"judgements agree with the *original RobotReviewer's deposited labels* "
               f"(generated from publisher PDFs) in {mean_fid:.1f}% of domain comparisons "
               f"on average across the four domains. Because Tier C proved the two "
-              f"implementations bit-identical on identical inputs, this residual reflects "
+              f"implementations' SVM RoB pipelines judgement-identical on identical "
+              f"inputs (the original runs through the shim in the same SVM-only "
+              f"configuration as RCT-Reviewer), this residual reflects "
               f"PDF-source differences (open-access PMC versions + PyMuPDF extraction vs "
               f"publisher PDFs + the original stack), not an implementation difference.",
               ""]
@@ -622,12 +627,15 @@ def phase_compare():
 
 
 def phase_control(df):
-    """Decisive control: run the ORIGINAL 2017 BiasRobot (via the shim) on the
-    SAME open-access PDF text that RCT-Reviewer judged. Expected outcome: the
-    two implementations agree near-perfectly on identical inputs, and the
+    """Decisive control: run the ORIGINAL 2017 BiasRobot (via the shim, in the
+    same SVM-only configuration as RCT-Reviewer) on the SAME open-access PDF
+    text that RCT-Reviewer judged. Expected outcome: the two implementations'
+    SVM pipelines agree near-perfectly on identical inputs, and the
     original shows the SAME reduced human agreement as the refactored tool —
     proving the Tier E gap vs Tian comes from the PDF source, not the
-    refactoring."""
+    refactoring. Scope: an apples-to-apples SVM-to-SVM comparison; the
+    original's full SVM+CNN ensemble is not re-executed anywhere (Tier B
+    quantifies its contribution from stored outputs)."""
     import validation_shim as shim
     from rct_reviewer.core.pdf_parser import PDFParser
     parser = PDFParser()
@@ -697,12 +705,16 @@ def phase_control_compare():
     import evaluate as ev
     ctrl = list(csv.DictReader(open(OUT / "tian_control.csv")))
     lines = ["", "## Control — original implementation on the same PMC text", "",
-             "The original 2017 BiasRobot (via the compatibility shim) was run on the "
-             "identical open-access PDF text that RCT-Reviewer judged. If the "
-             "implementations are equivalent, agreement between them should be near-100% "
+             "The original 2017 BiasRobot (via the compatibility shim, run in the "
+             "same SVM-only configuration as RCT-Reviewer) was re-judged on the "
+             "identical open-access PDF text that RCT-Reviewer judged. This is a "
+             "like-for-like comparison: identical inputs, identical SVM pipeline, "
+             "so agreement between the two should be near-100% "
              "and the original should show the SAME reduced human agreement as the "
              "refactored tool — isolating PDF source as the only difference vs Tian's "
-             "published run.", ""]
+             "published run. The original's TensorFlow 1.x CNN is bypassed by the "
+             "shim and never executes here (its ensemble-level contribution is "
+             "quantified separately in Tier B from stored outputs).", ""]
     lines.append("| Domain | n | original(shim, PMC text) vs RCT-Reviewer agreement | "
                  "original(shim, PMC text) vs human κ | RCT-Reviewer vs human κ "
                  "(from Tier E) |")

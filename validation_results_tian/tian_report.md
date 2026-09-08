@@ -17,14 +17,14 @@ Per-domain agreement of RCT-Reviewer with the human consensus, against the same 
 | Blinding of participants and personnel | 313 | 76.0 (71.0–80.4) | 0.48 (0.38–0.57) | 0.72 | 0.90 | 83.4 | 0.58 | 0.59 |
 | Blinding of outcome assessment | 313 | 63.3 (57.8–68.4) | 0.12 (0.01–0.23) | 0.48 | 0.67 | 73.5 | 0.31 | 0.27 |
 
-External fidelity check: on the identical subset, RCT-Reviewer's judgements agree with the *original RobotReviewer's deposited labels* (generated from publisher PDFs) in 78.9% of domain comparisons on average across the four domains. Because Tier C proved the two implementations bit-identical on identical inputs, this residual reflects PDF-source differences (open-access PMC versions + PyMuPDF extraction vs publisher PDFs + the original stack), not an implementation difference.
+External fidelity check: on the identical subset, RCT-Reviewer's judgements agree with the *original RobotReviewer's deposited labels* (generated from publisher PDFs) in 78.9% of domain comparisons on average across the four domains. Because Tier C proved the two implementations' SVM RoB pipelines judgement-identical on identical inputs (the original runs through the shim in the same SVM-only configuration as RCT-Reviewer), this residual reflects PDF-source differences (open-access PMC versions + PyMuPDF extraction vs publisher PDFs + the original stack), not an implementation difference.
 
 
 Figure: figure_tier_e_human_concordance.(png|svg|pdf)
 
 ## Control — original implementation on the same PMC text
 
-The original 2017 BiasRobot (via the compatibility shim) was run on the identical open-access PDF text that RCT-Reviewer judged. If the implementations are equivalent, agreement between them should be near-100% and the original should show the SAME reduced human agreement as the refactored tool — isolating PDF source as the only difference vs Tian's published run.
+The original 2017 BiasRobot (via the compatibility shim, run in the same SVM-only configuration as RCT-Reviewer) was re-judged on the identical open-access PDF text that RCT-Reviewer judged. This is a like-for-like comparison: identical inputs, identical SVM pipeline, so agreement between the two should be near-100% and the original should show the SAME reduced human agreement as the refactored tool — isolating PDF source as the only difference vs Tian's published run. The original's TensorFlow 1.x CNN is bypassed by the shim and never executes here (its ensemble-level contribution is quantified separately in Tier B from stored outputs).
 
 | Domain | n | original(shim, PMC text) vs RCT-Reviewer agreement | original(shim, PMC text) vs human κ | RCT-Reviewer vs human κ (from Tier E) |
 |---|---|---|---|---|

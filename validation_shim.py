@@ -21,6 +21,17 @@ Three documented compatibility shims are applied:
    at RCT-Reviewer/data, which holds the real weight files — the same files
    the published RCT-Reviewer tool loads.
 
+Consequence for every comparison built on this shim: the original 2017 code
+runs in SVM-ONLY capacity. All original-vs-refactored comparisons (Tier A
+executed-code fidelity, Tier C, and the Tier E control in evaluate_tian.py)
+are therefore apples-to-apples SVM-to-SVM comparisons — identical inputs,
+identical weight files (DATA_ROOT redirect), identical configuration — so the
+refactoring is the only variable. Exact-reproduction claims are claims about
+these shared SVM paths; the original's full SVM+CNN(+ptyp) ensemble is never
+re-executed anywhere, and its performance contribution is quantified
+separately in Tier B from the stored outputs generated in the original
+2016 environment.
+
 Weight provenance: the .npz MiniClassifier weights (bias_doc_level,
 bias_sent_level, rct_svm_weights) were copied unconverted into RCT-Reviewer;
 they are the original RobotReviewer artifacts. Their SHA-256 hashes are
