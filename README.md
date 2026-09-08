@@ -1,7 +1,7 @@
 
 # RCT-Reviewer Validation Harness
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22260984.svg)](https://doi.org/10.5281/zenodo.22260984)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22260983.svg)](https://doi.org/10.5281/zenodo.22260983)
 
 This suite provides validation for the RCT-Reviewer. It bridges the gap between the 2017 original code (`robotreviewer-master`) and the 2026 refactored code (`RCT-Reviewer`), proving mathematical fidelity of the shared SVM paths, predictive validity, and modern infrastructure robustness. Note on scope: the original's TensorFlow 1.x CNN cannot run in a maintained environment and is deliberately bypassed by the validation shim, so every executed original-vs-refactored comparison is SVM-only on both sides (see `validation_shim.py` and Tier B for how the dropped ensemble is accounted for).
 
